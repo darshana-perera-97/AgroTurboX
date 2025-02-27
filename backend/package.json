@@ -1,5 +1,6 @@
 {
   "name": "backend",
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,6 +14,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "firebase": "^10.14.1",
+    "firebase-admin": "^13.1.0",
+    "moment-timezone": "^0.5.47"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.9"
   }
 }
