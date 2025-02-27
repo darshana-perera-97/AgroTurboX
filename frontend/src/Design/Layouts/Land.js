@@ -10,14 +10,12 @@ export default function Land() {
     fetch("http://localhost:5010/api/data")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched data:", data); // Check if data is fetched correctly
         const deviceMap = {};
         data.forEach((entry) => {
           Object.keys(entry.data.device).forEach((deviceID) => {
             deviceMap[deviceID] = entry.data.device[deviceID].data;
           });
         });
-        console.log("Processed devices:", deviceMap); // Check the device map
         setDevices(deviceMap);
       })
       .catch((err) => console.error("Error fetching device data:", err));
@@ -43,7 +41,7 @@ export default function Land() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       points.forEach((point) => {
-        drawRadarEffect(ctx, point); // Enhanced radar effect
+        drawRadarEffect(ctx, point);
         drawPoint(ctx, point.x, point.y, point.name);
       });
 
@@ -59,8 +57,6 @@ export default function Land() {
       return;
     }
 
-    console.log("Devices available:", devices); // Log the devices
-
     const deviceID = prompt(
       `Select a device: \n${Object.keys(devices).join("\n")}`
     );
@@ -74,12 +70,31 @@ export default function Land() {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
+
+    // Check if the clicked point already exists
+    const isDuplicate = points.some(
+      (point) => Math.abs(point.x - x) < 10 && Math.abs(point.y - y) < 10
+    );
+
+    if (isDuplicate) {
+      alert("A point already exists at this location.");
+      return;
+    }
+
     const name = `Device ${deviceID}`;
 
-    setPoints([
-      ...points,
-      { x, y, name, radius: 5, alpha: 1, deviceID, data: devices[deviceID] },
-    ]);
+    // Add the new point
+    const newPoint = {
+      x,
+      y,
+      name,
+      radius: 5,
+      alpha: 1,
+      deviceID,
+      data: devices[deviceID],
+    };
+
+    setPoints((prevPoints) => [...prevPoints, newPoint]);
 
     // Send data to the backend to store the new point
     fetch("http://localhost:5010/api/add-point", {
@@ -87,13 +102,7 @@ export default function Land() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        x,
-        y,
-        name,
-        deviceID,
-        data: devices[deviceID],
-      }),
+      body: JSON.stringify(newPoint),
     }).catch((err) => console.error("Error saving point:", err));
   };
 
@@ -127,25 +136,14 @@ export default function Land() {
   };
 
   const drawRadarEffect = (ctx, point) => {
-    const maxRadius = 40;
-    const numCircles = 3; // Number of radar rings
-    const speed = 0.5;
+    point.radius += 0.5;
+    if (point.radius > 40) point.radius = 5;
 
-    // Draw multiple circles with varying alpha and radius
-    for (let i = 0; i < numCircles; i++) {
-      const radius = point.radius + i * (maxRadius / numCircles);
-      const alpha = 1 - i * 0.2; // Fade the circles
-
-      ctx.strokeStyle = `rgba(0, 200, 0, ${alpha})`;
-      ctx.lineWidth = 2 + i; // Increase thickness for each ring
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    // Update the radius to expand the radar effect
-    point.radius += speed;
-    if (point.radius > maxRadius) point.radius = 5; // Reset the radius after max size
+    ctx.strokeStyle = `rgba(0, 200, 0, 0.3)`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+    ctx.stroke();
   };
 
   return (
@@ -165,24 +163,32 @@ export default function Land() {
         <ul>
           {points.length > 0 ? (
             points.map((point, index) => (
-              <li key={index}>
-                {point.name} ({point.x.toFixed(2)}, {point.y.toFixed(2)})
+              <li key={index} style={{ marginBottom: "8px" }}>
+                <strong>{point.name}</strong> ({Math.round(point.x)},{" "}
+                {Math.round(point.y)})
+                <br />
+                🌡 Temp: {point.data.temp}°C | 💧 Humidity: {point.data.humidity}
+                %<br />
+                🌱 Soil Moisture: {point.data.soilMoisture}% | ☔ Rain:{" "}
+                {point.data.rain ? "Yes" : "No"}
+                <br />
                 <button
                   onClick={() => deletePoint(index)}
                   style={{
-                    marginLeft: "10px",
+                    marginTop: "5px",
+                    padding: "4px 8px",
                     backgroundColor: "red",
                     color: "white",
                     border: "none",
                     cursor: "pointer",
                   }}
                 >
-                  Delete
+                  ❌ Delete
                 </button>
               </li>
             ))
           ) : (
-            <li>No points available</li>
+            <p>No points available.</p>
           )}
         </ul>
       </div>

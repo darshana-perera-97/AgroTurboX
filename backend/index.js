@@ -4,7 +4,11 @@ import fs from "fs";
 import moment from "moment-timezone";
 import express from "express";
 import cors from "cors"; // Importing cors
+import axios from "axios";
+import dotenv from "dotenv";
+import OpenAI from "openai";
 
+dotenv.config();
 // Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAWMN1uEa2Bq9miiIDYitGHmVXG-DiXXaM",
@@ -32,6 +36,25 @@ server.use(cors()); // This will allow all origins by default
 
 // Middleware to handle JSON requests
 server.use(express.json());
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Function to generate a WhatsApp bulk message with weather details
+async function getCompletion(prompt) {
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error("Error fetching completion:", error);
+    return "Sorry, I couldn't generate the message.";
+  }
+}
 
 // Function to fetch and store data
 const fetchAndStoreData = async () => {
@@ -102,8 +125,6 @@ server.get("/api/data", (req, res) => {
   }
 });
 
-
-
 // New API to add points to devices.json
 server.post("/api/add-point", (req, res) => {
   const newPoint = req.body;
@@ -128,6 +149,52 @@ server.post("/api/add-point", (req, res) => {
     res.status(500).json({ error: "Error saving point." });
   }
 });
+
+const API_KEY =
+  process.env.WEATHER_API_KEY || "142b0097648d4f5c92c164827252702"; // Set your API key here
+const BASE_URL = "http://api.weatherapi.com/v1/current.json";
+
+// Weather API + OpenAI Integration
+server.get("/api/weather", async (req, res) => {
+  try {
+    const city = req.query.city || "Chilaw"; // Default to Colombo
+
+    if (!API_KEY || API_KEY === "your_actual_api_key_here") {
+      return res
+        .status(500)
+        .json({ error: "Missing or invalid Weather API key" });
+    }
+
+    // Fetch weather data
+    const response = await axios.get(
+      `${BASE_URL}?key=${API_KEY}&q=${city}&aqi=no`
+    );
+    const weatherData = response.data;
+
+    // Extract necessary weather details
+    const { name, country } = weatherData.location;
+    const { temp_c, condition } = weatherData.current;
+
+    // Prepare prompt for OpenAI
+    const prompt = ` ${name}, ${country}. temperature is ${temp_c}°C and the condition is ${condition.text}. With the content, create a predition of  weather in next 7 days in a summery in 200 chars? and provide me a day if rain will happen? and data for the soil moisture and raining in next week`;
+
+    // Get AI-generated message
+    const aiMessage = await getCompletion(prompt);
+
+    // Send response
+    res.json({
+      location: { name, country },
+      weather: { temp_c, condition: condition.text },
+      assume: aiMessage,
+      fullData: weatherData,
+    });
+  } catch (error) {
+    console.error("Error fetching weather or AI response:", error);
+    res.status(500).json({ error: "Error fetching weather or AI response" });
+  }
+});
+
+// API to get weather for Colombo
 
 // New API to delete points from devices.json
 server.post("/api/delete-point", (req, res) => {
