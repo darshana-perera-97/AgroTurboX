@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get, child } from "firebase/database";
 import fs from "fs";
 import moment from "moment-timezone";
+import express from "express";
+import cors from "cors"; // Importing cors
 
 // Firebase config
 const firebaseConfig = {
@@ -20,6 +22,16 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 console.log("Firebase initialized successfully!");
+
+// Initialize Express
+const server = express();
+const port = 5010;
+
+// Use CORS middleware to allow cross-origin requests
+server.use(cors()); // This will allow all origins by default
+
+// Middleware to handle JSON requests
+server.use(express.json());
 
 // Function to fetch and store data
 const fetchAndStoreData = async () => {
@@ -74,3 +86,23 @@ setInterval(fetchAndStoreData, 60000);
 
 // Call once to initialize
 fetchAndStoreData();
+
+// New API to return data from data.json
+server.get("/api/data", (req, res) => {
+  try {
+    if (fs.existsSync("data.json")) {
+      const fileData = fs.readFileSync("data.json", "utf8");
+      const storedData = JSON.parse(fileData);
+      res.json(storedData); // Return data as JSON
+    } else {
+      res.status(404).json({ error: "Data not found." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error reading data file." });
+  }
+});
+
+// Start the Express server
+server.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
