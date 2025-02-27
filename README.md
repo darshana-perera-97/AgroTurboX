@@ -1,1 +1,26 @@
 # AgroTurboX
+
+
+firebase code:
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAWMN1uEa2Bq9miiIDYitGHmVXG-DiXXaM",
+  authDomain: "agroturbox.firebaseapp.com",
+  projectId: "agroturbox",
+  storageBucket: "agroturbox.firebasestorage.app",
+  messagingSenderId: "200490639266",
+  appId: "1:200490639266:web:ef247d507698ab87ec1cfb",
+  measurementId: "G-YGHK4W0748"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
