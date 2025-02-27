@@ -27,7 +27,14 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 unsigned long previousMillis = 0;
+unsigned long updateMillis = 0;
 bool signupOK = false;
+
+// Global sensor values
+float soilMoisture = 40.5;
+float temp = 25.3;
+float humidity = 60.2;
+bool rain = false; // false = no rain, true = raining
 
 // Function to connect to Wi-Fi
 void connectToWiFi() {
@@ -56,7 +63,7 @@ void connectToFirebase() {
 
   // Assign token status callback function
   config.token_status_callback = tokenStatusCallback;
-  
+
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
 }
@@ -78,18 +85,54 @@ void printFirebaseDatabase() {
   }
 }
 
+// Function to update sensor data in Firebase
+void updateFirebaseData() {
+  Serial.println("\nUpdating sensor data in Firebase...");
+
+  String path = "device/0001/data/";
+
+  bool success = true;
+
+  success &= Firebase.RTDB.setFloat(&fbdo, path + "soilMoisture", soilMoisture);
+  success &= Firebase.RTDB.setFloat(&fbdo, path + "temp", temp);
+  success &= Firebase.RTDB.setFloat(&fbdo, path + "humidity", humidity);
+  success &= Firebase.RTDB.setBool(&fbdo, path + "rain", rain);
+
+  if (success) {
+    Serial.println("Sensor data updated successfully!");
+  } else {
+    Serial.println("Failed to update Firebase!");
+    Serial.println("Reason: " + fbdo.errorReason());
+  }
+}
+
 void setup() {
   Serial.begin(115200);
-  
+
   connectToWiFi();
   connectToFirebase();
 }
 
 void loop() {
   if (Firebase.ready() && signupOK) {
-    if (millis() - previousMillis > 60000 || previousMillis == 0) { // Every 1 minute
+    
+    // Fetch database content every 1 minute
+    if (millis() - previousMillis > 60000 || previousMillis == 0) {
       previousMillis = millis();
       printFirebaseDatabase();
+    }
+
+    // Update sensor values in Firebase every 30 seconds
+    if (millis() - updateMillis > 30000 || updateMillis == 0) {
+      updateMillis = millis();
+
+      // Simulate sensor data updates (in a real case, read from sensors)
+      soilMoisture = random(30, 60); // Fake data (30% to 60%)
+      temp = random(20, 35); // Fake data (20°C to 35°C)
+      humidity = random(40, 80); // Fake data (40% to 80%)
+      rain = random(0, 2); // Randomly switch between 0 (false) and 1 (true)
+
+      updateFirebaseData();
     }
   }
 }
