@@ -102,6 +102,63 @@ server.get("/api/data", (req, res) => {
   }
 });
 
+
+
+// New API to add points to devices.json
+server.post("/api/add-point", (req, res) => {
+  const newPoint = req.body;
+  if (!newPoint) {
+    return res.status(400).json({ error: "No data provided." });
+  }
+
+  try {
+    let devices = [];
+    if (fs.existsSync("devices.json")) {
+      const fileData = fs.readFileSync("devices.json", "utf8");
+      devices = JSON.parse(fileData);
+    }
+
+    // Add new point to devices.json
+    devices.push(newPoint);
+
+    // Write the updated data to the file
+    fs.writeFileSync("devices.json", JSON.stringify(devices, null, 2));
+    res.status(200).json({ message: "Point added successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Error saving point." });
+  }
+});
+
+// New API to delete points from devices.json
+server.post("/api/delete-point", (req, res) => {
+  const pointToDelete = req.body;
+  if (!pointToDelete) {
+    return res.status(400).json({ error: "No data provided." });
+  }
+
+  try {
+    let devices = [];
+    if (fs.existsSync("devices.json")) {
+      const fileData = fs.readFileSync("devices.json", "utf8");
+      devices = JSON.parse(fileData);
+    }
+
+    // Filter out the point to delete
+    devices = devices.filter(
+      (point) =>
+        point.x !== pointToDelete.x ||
+        point.y !== pointToDelete.y ||
+        point.name !== pointToDelete.name
+    );
+
+    // Write the updated data to the file
+    fs.writeFileSync("devices.json", JSON.stringify(devices, null, 2));
+    res.status(200).json({ message: "Point deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting point." });
+  }
+});
+
 // Start the Express server
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
