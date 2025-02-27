@@ -18,8 +18,8 @@
 #define WIFI_PASSWORD "dddddddd"
 
 // Firebase credentials
-#define API_KEY "AIzaSyCwAMrMTk96PffuW7a4yEKifshfGoCQBZ4"
-#define DATABASE_URL "https://sms-server-adef0-default-rtdb.firebaseio.com/"
+#define API_KEY "AIzaSyAWMN1uEa2Bq9miiIDYitGHmVXG-DiXXaM"
+#define DATABASE_URL "https://agroturbox-default-rtdb.firebaseio.com/"
 
 // Define Firebase objects
 FirebaseData fbdo;

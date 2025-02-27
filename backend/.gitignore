@@ -4,12 +4,14 @@
 /node_modules
 /.pnp
 .pnp.js
+.env
 
 # testing
 /coverage
 
 # production
 /build
+/data.json
 
 # misc
 .DS_Store
@@ -21,3 +23,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+
+142b0097648d4f5c92c164827252702
