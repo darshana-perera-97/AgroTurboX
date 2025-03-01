@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Spinner, Card, Row, Col } from "react-bootstrap";
+import { Spinner, Card, Row, Col, Container } from "react-bootstrap";
 import {
   FaTemperatureHigh,
   FaCloudSun,
@@ -9,6 +9,8 @@ import {
   FaCloud,
   FaDumbbell,
 } from "react-icons/fa";
+import mainAsset from "../Assets/WeatherAssume.png";
+import icon1 from "../Assets/icon (2).png";
 
 const WeatherInfo = () => {
   const [weather, setWeather] = useState(null);
@@ -29,7 +31,7 @@ const WeatherInfo = () => {
           dewpoint_c: data.fullData.current.dewpoint_c,
         });
         setAssume(data.assume);
-        setLoading(false); // Set loading to false once data is fetched
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching weather:", error);
@@ -38,157 +40,110 @@ const WeatherInfo = () => {
   }, []);
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">Weather in Chilaw</h2>
-      {loading ? (
-        <div className="d-flex justify-content-center">
-          <Spinner animation="border" variant="primary" />
-        </div>
-      ) : (
-        <Row className="justify-content-center">
-          {/* Card for weather summary */}
-          <Col sm={12} md={8} lg={6}>
-            <Card className="shadow-lg border-light mb-4">
-              <Card.Body>
-                <Card.Title className="text-center mb-3">
-                  <h3>Weather Details</h3>
-                </Card.Title>
+    <Container
+      fluid
+      className="py-4 rounded-5 my-5"
+      style={{ backgroundColor: "#d2e3fc" }}
+    >
+      <Row className="justify-content-center ">
+        {/* Left Side (4 Columns) */}
+        <Col md={4} className="d-flex flex-column justify-content-between">
+          <div className="px-5 py-4">
+            <img src={icon1} alt="Weather Icon" className="" width="110px" />
+            <h3 className="my-2">AI Powered</h3>
+            <h1 className="mb-5">Weather Assume</h1>
+            <p className="">
+              We will provide the assumptions for the Weather update for next 7
+              days
+            </p>
+            {!loading && <p>{weather.condition}</p>}
+          </div>
+          <img
+            src={mainAsset}
+            alt="Weather Icon"
+            className="img-fluid mx-auto d-block px-4"
+          />
+        </Col>
 
-                <Row>
-                  {/* Temperature */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
+        {/* Right Side (8 Columns) */}
+        <Col md={8}>
+          {loading ? (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" variant="primary" />
+            </div>
+          ) : (
+            <div className="p-4">
+              {/* Weather Data (2x3 Grid) */}
+              <Row>
+                {[
+                  {
+                    icon: <FaTemperatureHigh size={30} />,
+                    name: "Temperature",
+                    value: `${weather.temp_c}°C`,
+                  },
+                  {
+                    icon: <FaWind size={30} />,
+                    name: "Wind Speed",
+                    value: `${weather.wind_kph} km/h`,
+                  },
+                  {
+                    icon: <FaTachometerAlt size={30} />,
+                    name: "Pressure",
+                    value: `${weather.pressure_in} in`,
+                  },
+                  {
+                    icon: <FaTint size={30} />,
+                    name: "Humidity",
+                    value: `${weather.humidity}%`,
+                  },
+                  {
+                    icon: <FaCloud size={30} />,
+                    name: "Cloud Cover",
+                    value: `${weather.cloud}%`,
+                  },
+                  {
+                    icon: <FaDumbbell size={30} />,
+                    name: "Dew Point",
+                    value: `${weather.dewpoint_c}°C`,
+                  },
+                ].map((item, index) => (
+                  <Col xs={6} md={4} key={index} className="mb-3">
+                    <Card className="shadow-sm text-center py-3 rounded-4">
                       <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaTemperatureHigh size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Temperature:</strong> {weather.temp_c}°C
-                            </p>
-                          </div>
+                        <div className="d-flex flex-column align-items-center">
+                          {item.icon}
+                          <h5 className="mb-1 mt-2">
+                            <strong>{item.name}</strong>
+                          </h5>
+                          <p className="mb-0">{item.value}</p>
                         </div>
                       </Card.Body>
                     </Card>
                   </Col>
+                ))}
+              </Row>
 
-                  {/* Wind Speed */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaWind size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Wind Speed:</strong> {weather.wind_kph}{" "}
-                              km/h
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-
-                <Row>
-                  {/* Pressure */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaTachometerAlt size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Pressure:</strong> {weather.pressure_in}{" "}
-                              in
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-
-                  {/* Humidity */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaTint size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Humidity:</strong> {weather.humidity}%
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-
-                <Row>
-                  {/* Cloud Cover */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaCloud size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Cloud Cover:</strong> {weather.cloud}%
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-
-                  {/* Dew Point */}
-                  <Col xs={12} md={6}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaDumbbell size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0 icon" >
-                              <strong>Dew Point:</strong> {weather.dewpoint_c}°C
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-
-                {/* Weather Condition in a New Card */}
-                <Row>
-                  <Col xs={12}>
-                    <Card className="mb-3 shadow-sm">
-                      <Card.Body>
-                        <div className="d-flex align-items-center">
-                          <FaCloudSun size={30} className="mr-3" />
-                          <div>
-                            <p className="mb-0">
-                              <strong>Condition:</strong> {weather.condition}
-                            </p>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-
-                <hr />
-                {/* Forecast */}
-                <div className="text-center">
-                  <p>
+              {/* Condition & Forecast */}
+              {/* <Card className="shadow-sm mt-3">
+                <Card.Body>
+                  <p className="pt-3 px-4">
+                    <strong>Condition:</strong> {weather.condition}
+                  </p>
+                </Card.Body>
+              </Card> */}
+              {/* Condition & Forecast */}
+              <Card className="shadow-sm mt-3 rounded-4">
+                <Card.Body>
+                  <p className="pt-3 px-4">
                     <strong>Forecast:</strong> {assume}
                   </p>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      )}
-    </div>
+                </Card.Body>
+              </Card>
+            </div>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

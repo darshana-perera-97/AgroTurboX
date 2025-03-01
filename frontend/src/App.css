@@ -55,3 +55,14 @@
     /* 1 card per row on mobiles */
   }
 }
+
+.pink-background {
+  background: #f9d2f1;
+}
+
+.landing-section {
+  background-size: 100% 100%;
+  background-position: top;
+  color: white;
+  background-image: url(./Design/Assets/back.jpg);
+}
