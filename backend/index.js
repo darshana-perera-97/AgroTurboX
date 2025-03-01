@@ -148,7 +148,6 @@ server.get("/api/data/last", (req, res) => {
   }
 });
 
-
 // New API to add points to devices.json
 server.post("/api/add-point", (req, res) => {
   const newPoint = req.body;
@@ -233,6 +232,24 @@ server.get("/api/points", (req, res) => {
   }
 });
 
+server.get("/api/data/latest", (req, res) => {
+  try {
+    if (fs.existsSync("data.json")) {
+      const fileData = fs.readFileSync("data.json", "utf8");
+      const storedData = JSON.parse(fileData);
+
+      // Get the last 20 entries
+      const latestEntries = storedData.slice(-20).reverse(); // Reverse to show latest first
+
+      res.json(latestEntries);
+    } else {
+      res.status(404).json({ error: "Data file not found." });
+    }
+  } catch (error) {
+    console.error("Error reading data file:", error);
+    res.status(500).json({ error: "Error reading data file." });
+  }
+});
 
 // API to get weather for Colombo
 

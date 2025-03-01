@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import TickPosition from "../Components/TickPosition";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
+import TickPosition from "../Components/TickPosition"; // First Chart
 
 export default function Charts() {
   const [data, setData] = useState({
@@ -9,36 +11,37 @@ export default function Charts() {
     soilMoistureData: [],
     tempData: [],
   });
+  const [data2, setData2] = useState({
+    timeData: [],
+    humidityData: [],
+    rainData: [],
+    soilMoistureData: [],
+    tempData: [],
+  });
 
   useEffect(() => {
     const fetchData = () => {
-      fetch("http://localhost:5010/api/data")
+      fetch("http://localhost:5010/api/data/latest")
         .then((response) => response.json())
         .then((data) => {
-          // Format the fetched data into timeData and other data
-          const timeData = data.map((item) => new Date(item.timestamp)); // Convert timestamp string to Date objects
-          const humidityData = data.map(
+          // Reverse the order of the data array
+          const reversedData = data.reverse();
+
+          // Format the fetched data
+          const timeData = reversedData.map((item) => new Date(item.timestamp));
+          const humidityData = reversedData.map(
             (item) => item.data.device["0001"].data.humidity
           );
-          const rainData = data.map(
-            (item) => (item.data.device["0001"].data.rain ? 1 : 0) // Convert rain boolean to binary (1 for true, 0 for false)
+          const rainData = reversedData.map((item) =>
+            item.data.device["0001"].data.rain ? 1 : 0
           );
-          const soilMoistureData = data.map(
+          const soilMoistureData = reversedData.map(
             (item) => item.data.device["0001"].data.soilMoisture
           );
-          const tempData = data.map(
+          const tempData = reversedData.map(
             (item) => item.data.device["0001"].data.temp
           );
 
-          // Log the data to verify the structure
-          console.log("Fetched Data:", data);
-          console.log("Formatted timeData:", timeData);
-          console.log("Formatted humidityData:", humidityData);
-          console.log("Formatted rainData:", rainData);
-          console.log("Formatted soilMoistureData:", soilMoistureData);
-          console.log("Formatted tempData:", tempData);
-
-          // Set the state with the formatted data
           setData({
             timeData,
             humidityData,
@@ -50,19 +53,65 @@ export default function Charts() {
         .catch((error) => console.error("Error fetching data:", error));
     };
 
-    // Fetch data initially
     fetchData();
+    const intervalId = setInterval(fetchData, 60000);
 
-    // Set an interval to fetch data every 1 minute
-    const intervalId = setInterval(fetchData, 60000); // 60000 ms = 1 minute
+    return () => clearInterval(intervalId);
+  }, []);
 
-    // Cleanup the interval on component unmount
+  useEffect(() => {
+    const fetchData = () => {
+      fetch("http://localhost:5010/api/data")
+        .then((response) => response.json())
+        .then((data) => {
+          // Format the fetched data
+          const timeData = data.map((item) => new Date(item.timestamp));
+          const humidityData = data.map(
+            (item) => item.data.device["0001"].data.humidity
+          );
+          const rainData = data.map((item) =>
+            item.data.device["0001"].data.rain ? 1 : 0
+          );
+          const soilMoistureData = data.map(
+            (item) => item.data.device["0001"].data.soilMoisture
+          );
+          const tempData = data.map(
+            (item) => item.data.device["0001"].data.temp
+          );
+
+          setData2({
+            timeData,
+            humidityData,
+            rainData,
+            soilMoistureData,
+            tempData,
+          });
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 60000);
+
     return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div>
-      <TickPosition data={data} />
+      <Tabs>
+        <TabList>
+          <Tab>Within 24 Hours</Tab>
+          <Tab>Within last week</Tab>
+        </TabList>
+
+        <TabPanel>
+          <TickPosition data={data} />
+        </TabPanel>
+
+        <TabPanel>
+          <TickPosition data={data2} />
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }
