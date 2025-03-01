@@ -33,34 +33,29 @@ bool signupOK = false;
 
 // Global variables for sensor data
 float humidity;
-bool rain;
 float soilMoisture;
 float temp;
+int mqValue; // Gas sensor value
 
-// Function to set random values for sensor data
+// Define the analog pin for MQ sensor
+#define MQ_PIN A0 // Use A0 for ESP8266 (only one analog pin)
+
 void setRandomSensorValues()
 {
   humidity = random(60, 101);                           // Random humidity between 60% and 100%
-  rain = random(0, 2);                                  // Randomly true (1) or false (0)
   soilMoisture = random(50, 90) + random(0, 10) / 10.0; // Random soil moisture between 50.0 and 90.9
   temp = random(25, 40) + random(0, 10) / 10.0;         // Random temp between 25.0°C and 40.9°C
+  mqValue = analogRead(MQ_PIN);                         // Read the MQ gas sensor value
 }
 
-// Function to write sensor values to Firebase
 void writeDataToFirebase()
 {
-  Serial.println("Writing random sensor data to Firebase...");
+  Serial.println("Writing sensor data to Firebase...");
 
   if (Firebase.RTDB.setFloat(&fbdo, "/device/0001/data/humidity", humidity))
     Serial.println("Humidity updated successfully.");
   else
     Serial.println("Failed to update humidity: " + fbdo.errorReason());
-
-  if (Firebase.RTDB.setBool(&fbdo, "/device/0001/data/rain", rain))
-    Serial.println("Rain updated successfully.");
-  else
-    Serial.println("Failed to update rain: " + fbdo.errorReason());
-
   if (Firebase.RTDB.setFloat(&fbdo, "/device/0001/data/soilMoisture", soilMoisture))
     Serial.println("Soil moisture updated successfully.");
   else
@@ -70,6 +65,11 @@ void writeDataToFirebase()
     Serial.println("Temperature updated successfully.");
   else
     Serial.println("Failed to update temperature: " + fbdo.errorReason());
+
+  if (Firebase.RTDB.setInt(&fbdo, "/device/0001/data/mqValue", mqValue)) // Send MQ sensor data to Firebase
+    Serial.println("MQ Gas Sensor value updated successfully.");
+  else
+    Serial.println("Failed to update MQ Gas Sensor: " + fbdo.errorReason());
 }
 
 void setup()
@@ -119,15 +119,15 @@ void loop()
     writeDataToFirebase();
 
     // Print the random sensor values
-    Serial.println("\nRandom Sensor Data:");
+    Serial.println("\nSensor Data:");
     Serial.print("Humidity: ");
     Serial.println(humidity);
-    Serial.print("Rain: ");
-    Serial.println(rain ? "Yes" : "No");
     Serial.print("Soil Moisture: ");
     Serial.println(soilMoisture);
     Serial.print("Temperature: ");
     Serial.println(temp);
+    Serial.print("MQ Gas Sensor Value: ");
+    Serial.println(mqValue); // Print MQ sensor value
     Serial.println("----------------------");
   }
 }

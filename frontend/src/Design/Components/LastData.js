@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 const LastData = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,10 +56,12 @@ const LastData = () => {
     rain: "rain.png",
     soilMoisture: "soil.png",
     temp: "temperature.png",
+    gasQuality: "gas.png", // New icon for gas quality
     default: "default.png",
   };
 
-  const cardColors = ["#FFCC80", "#81D4FA", "#A5D6A7", "#EF9A9A"]; // 4 Different colors
+  // Calculate gas quality
+  const gasQuality = ((sensorData.mqValue / 1024) * 100).toFixed(2);
 
   return (
     <div className="container data">
@@ -69,27 +70,46 @@ const LastData = () => {
         <strong>Timestamp:</strong> {data.timestamp}
       </p>
       <div className="card-container">
-        {Object.entries(sensorData).map(([key, value], index) => (
-          <div
-            key={key}
-            className="card d-flex"
-            style={{ backgroundColor: cardColors[index % cardColors.length] }}
-          >
-            <div>
-              <img
-                src={`/icons/${iconMap[key] || iconMap.default}`}
-                alt={key}
-                className="card-icon"
-              />
+        {/* Map through the sensor data and display each value */}
+        {Object.entries(sensorData).map(([key, value], index) => {
+          // Skip "mqValue" since we handle it separately
+          if (key === "mqValue") return null;
+
+          return (
+            <div key={key} className="card d-flex card-hover">
+              <div>
+                <img
+                  src={`/icons/${iconMap[key] || iconMap.default}`}
+                  alt={key}
+                  className="card-icon"
+                />
+              </div>
+              <div className="card-content">
+                <h3>{key}</h3>
+                <p>
+                  {typeof value === "boolean" ? (value ? "Yes" : "No") : value}
+                </p>
+              </div>
             </div>
-            <div className="card-content">
-              <h3>{key}</h3>
-              <p>
-                {typeof value === "boolean" ? (value ? "Yes" : "No") : value}
-              </p>
-            </div>
+          );
+        })}
+
+        
+
+        {/* MQ Value Card */}
+        <div className="card d-flex card-hover">
+          <div>
+            <img
+              src={`/icons/${iconMap["gasQuality"] || iconMap.default}`}
+              alt="mqValue"
+              className="card-icon"
+            />
           </div>
-        ))}
+          <div className="card-content">
+            <h3>MQ Value</h3>
+            <p>{sensorData.mqValue}</p>
+          </div>
+        </div>
       </div>
     </div>
   );

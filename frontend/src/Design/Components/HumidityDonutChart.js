@@ -59,21 +59,26 @@ const HumidityDonutChart = () => {
     },
   };
 
-  // Custom plugin to display text inside the chart
-  const textCenterPlugin = {
+  // Custom plugin to add text inside the donut chart
+  const textCenter = {
     id: "textCenter",
-    afterDraw(chart) {
-      const {
-        ctx,
-        chartArea: { width, height },
-      } = chart;
-      ctx.save();
-      ctx.font = "bold 18px Arial";
-      ctx.fillStyle = "#000";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`${humidity}%`, width / 2, height / 2);
+    beforeDraw(chart) {
+      const { width } = chart;
+      const { height } = chart;
+      const ctx = chart.ctx;
+
       ctx.restore();
+      const fontSize = (height / 200).toFixed(2);
+      ctx.font = `${fontSize}em sans-serif`;
+      ctx.textBaseline = "middle";
+
+      const text = "Humidity";
+      const textX = Math.round((width - ctx.measureText(text).width) / 2);
+      const textY = height / 2;
+
+      ctx.fillStyle = "#333"; // Text color
+      ctx.fillText(text, textX, textY);
+      ctx.save();
     },
   };
 
@@ -82,7 +87,7 @@ const HumidityDonutChart = () => {
       <Doughnut
         data={chartData}
         options={chartOptions}
-        plugins={[textCenterPlugin]}
+        plugins={[textCenter]}
       />
     </div>
   );
