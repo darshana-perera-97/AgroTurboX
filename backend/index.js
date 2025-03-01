@@ -125,6 +125,30 @@ server.get("/api/data", (req, res) => {
   }
 });
 
+server.get("/api/data/last", (req, res) => {
+  try {
+    if (fs.existsSync("data.json")) {
+      const fileData = fs.readFileSync("data.json", "utf8");
+      const storedData = JSON.parse(fileData);
+
+      if (storedData.length === 0) {
+        return res.status(404).json({ error: "No data available." });
+      }
+
+      // Get the last entry
+      const lastEntry = storedData[storedData.length - 1];
+
+      res.json(lastEntry); // Return only the last JSON entry
+    } else {
+      res.status(404).json({ error: "Data file not found." });
+    }
+  } catch (error) {
+    console.error("Error reading data file:", error);
+    res.status(500).json({ error: "Error reading data file." });
+  }
+});
+
+
 // New API to add points to devices.json
 server.post("/api/add-point", (req, res) => {
   const newPoint = req.body;
@@ -193,6 +217,22 @@ server.get("/api/weather", async (req, res) => {
     res.status(500).json({ error: "Error fetching weather or AI response" });
   }
 });
+
+// New API to get all points from devices.json
+server.get("/api/points", (req, res) => {
+  try {
+    if (fs.existsSync("devices.json")) {
+      const fileData = fs.readFileSync("devices.json", "utf8");
+      const devices = JSON.parse(fileData);
+      res.json(devices); // Return points as JSON
+    } else {
+      res.status(404).json({ error: "No devices found." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error reading devices file." });
+  }
+});
+
 
 // API to get weather for Colombo
 

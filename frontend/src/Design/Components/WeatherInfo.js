@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { Spinner, Card, Row, Col } from "react-bootstrap";
+import {
+  FaTemperatureHigh,
+  FaCloudSun,
+  FaWind,
+  FaTachometerAlt,
+  FaTint,
+  FaCloud,
+  FaDumbbell,
+} from "react-icons/fa";
 
 const WeatherInfo = () => {
   const [weather, setWeather] = useState(null);
   const [assume, setAssume] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5010/api/weather")
@@ -18,64 +29,167 @@ const WeatherInfo = () => {
           dewpoint_c: data.fullData.current.dewpoint_c,
         });
         setAssume(data.assume);
+        setLoading(false); // Set loading to false once data is fetched
       })
-      .catch((error) => console.error("Error fetching weather:", error));
+      .catch((error) => {
+        console.error("Error fetching weather:", error);
+        setLoading(false);
+      });
   }, []);
 
   return (
-    <div style={styles.container}>
-      <h2>Weather in Chilaw</h2>
-      {weather ? (
-        <div style={styles.card}>
-          <p>
-            <strong>Temperature:</strong> {weather.temp_c}°C
-          </p>
-          <p>
-            <strong>Condition:</strong> {weather.condition}
-          </p>
-          <p>
-            <strong>Wind Speed:</strong> {weather.wind_kph} km/h
-          </p>
-          <p>
-            <strong>Pressure:</strong> {weather.pressure_in} in
-          </p>
-          <p>
-            <strong>Humidity:</strong> {weather.humidity}%
-          </p>
-          <p>
-            <strong>Cloud Cover:</strong> {weather.cloud}%
-          </p>
-          <p>
-            <strong>Dew Point:</strong> {weather.dewpoint_c}°C
-          </p>
-          <hr />
-          <p>
-            <strong>Forecast:</strong> {assume}
-          </p>
+    <div className="container mt-5">
+      <h2 className="text-center mb-4">Weather in Chilaw</h2>
+      {loading ? (
+        <div className="d-flex justify-content-center">
+          <Spinner animation="border" variant="primary" />
         </div>
       ) : (
-        <p>Loading weather data...</p>
+        <Row className="justify-content-center">
+          {/* Card for weather summary */}
+          <Col sm={12} md={8} lg={6}>
+            <Card className="shadow-lg border-light mb-4">
+              <Card.Body>
+                <Card.Title className="text-center mb-3">
+                  <h3>Weather Details</h3>
+                </Card.Title>
+
+                <Row>
+                  {/* Temperature */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaTemperatureHigh size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Temperature:</strong> {weather.temp_c}°C
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+
+                  {/* Wind Speed */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaWind size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Wind Speed:</strong> {weather.wind_kph}{" "}
+                              km/h
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+
+                <Row>
+                  {/* Pressure */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaTachometerAlt size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Pressure:</strong> {weather.pressure_in}{" "}
+                              in
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+
+                  {/* Humidity */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaTint size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Humidity:</strong> {weather.humidity}%
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+
+                <Row>
+                  {/* Cloud Cover */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaCloud size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Cloud Cover:</strong> {weather.cloud}%
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+
+                  {/* Dew Point */}
+                  <Col xs={12} md={6}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaDumbbell size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0 icon" >
+                              <strong>Dew Point:</strong> {weather.dewpoint_c}°C
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+
+                {/* Weather Condition in a New Card */}
+                <Row>
+                  <Col xs={12}>
+                    <Card className="mb-3 shadow-sm">
+                      <Card.Body>
+                        <div className="d-flex align-items-center">
+                          <FaCloudSun size={30} className="mr-3" />
+                          <div>
+                            <p className="mb-0">
+                              <strong>Condition:</strong> {weather.condition}
+                            </p>
+                          </div>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                </Row>
+
+                <hr />
+                {/* Forecast */}
+                <div className="text-center">
+                  <p>
+                    <strong>Forecast:</strong> {assume}
+                  </p>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    textAlign: "center",
-    fontFamily: "Arial, sans-serif",
-    marginTop: "20px",
-  },
-  card: {
-    display: "inline-block",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-    backgroundColor: "#f9f9f9",
-    textAlign: "left",
-    maxWidth: "400px",
-  },
 };
 
 export default WeatherInfo;
