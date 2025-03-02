@@ -20,7 +20,7 @@ const LandingSection = () => {
               enhance productivity and sustainability.
             </p>
             <a href="#features" className="btn btn-primary btn-lg">
-              Learn More
+              View Data
             </a>
           </div>
 

@@ -135,7 +135,11 @@ const WeatherInfo = () => {
               <Card className="shadow-sm mt-3 rounded-4">
                 <Card.Body>
                   <p className="pt-3 px-4">
-                    <strong>Forecast:</strong> {assume}
+                    <strong>
+                      AI-Powered Weather Forecast for Next Week
+                      <br />
+                    </strong>{" "}
+                    {assume}
                   </p>
                 </Card.Body>
               </Card>
