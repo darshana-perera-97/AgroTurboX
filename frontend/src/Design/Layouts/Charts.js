@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import TickPosition from "../Components/TickPosition"; // First Chart
+import config from "../config"; // Import the backend URL
 
 export default function Charts() {
   const [data, setData] = useState({
@@ -21,7 +22,7 @@ export default function Charts() {
 
   useEffect(() => {
     const fetchData = () => {
-      fetch("http://localhost:5010/api/data/latest")
+      fetch(`${config.BACKEND_URL}/api/data/latest`)
         .then((response) => response.json())
         .then((data) => {
           // Reverse the order of the data array
@@ -61,7 +62,7 @@ export default function Charts() {
 
   useEffect(() => {
     const fetchData = () => {
-      fetch("http://localhost:5010/api/data")
+      fetch(`${config.BACKEND_URL}/api/data`)
         .then((response) => response.json())
         .then((data) => {
           // Format the fetched data

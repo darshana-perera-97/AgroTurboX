@@ -12,6 +12,10 @@
 # production
 /build
 /data.json
+data.json
+/devices.json
+./devices.json
+devices.json
 
 # misc
 .DS_Store

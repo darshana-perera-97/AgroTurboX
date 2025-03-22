@@ -8,6 +8,7 @@ import {
   FaGasPump,
   FaExclamationTriangle,
 } from "react-icons/fa";
+import config from "../config"; // Import the backend URL
 
 const LastData = () => {
   const [data, setData] = useState(null);
@@ -16,7 +17,7 @@ const LastData = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5010/api/data/last");
+      const response = await fetch(`${config.BACKEND_URL}/api/data/last`);
 
       if (response.ok) {
         const result = await response.json();

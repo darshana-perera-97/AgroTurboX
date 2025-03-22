@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import config from "../config"; // Import the backend URL
 
 export default function Land() {
   const canvasRef = useRef(null);
@@ -7,7 +8,7 @@ export default function Land() {
 
   // Fetch device data from API when the component mounts
   useEffect(() => {
-    fetch("http://localhost:5010/api/data")
+    fetch(`${config.BACKEND_URL}/api/data`)
       .then((res) => res.json())
       .then((data) => {
         const deviceMap = {};
@@ -23,7 +24,7 @@ export default function Land() {
 
   // Fetch points data from the backend on component mount
   useEffect(() => {
-    fetch("http://localhost:5010/api/points")
+    fetch(`${config.BACKEND_URL}/api/points`)
       .then((res) => res.json())
       .then((data) => {
         if (data && Array.isArray(data)) {
@@ -97,7 +98,7 @@ export default function Land() {
     setPoints((prevPoints) => [...prevPoints, newPoint]);
 
     // Send data to the backend to store the new point
-    fetch("http://localhost:5010/api/add-point", {
+    fetch(`${config.BACKEND_URL}/api/add-point`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +112,7 @@ export default function Land() {
     setPoints(points.filter((_, i) => i !== index));
 
     // Delete point from backend
-    fetch("http://localhost:5010/api/delete-point", {
+    fetch(`${config.BACKEND_URL}/api/delete-point`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

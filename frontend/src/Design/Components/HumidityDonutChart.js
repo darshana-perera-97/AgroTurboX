@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import config from "../config"; // Import the backend URL
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -12,7 +13,7 @@ const HumidityDonutChart = () => {
   // Function to fetch latest data
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5010/api/data/last");
+      const response = await fetch(`${config.BACKEND_URL}/api/data/last`);
       if (!response.ok) {
         throw new Error("Failed to fetch data");
       }

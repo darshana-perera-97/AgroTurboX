@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import mainAsset from "../Assets/WeatherAssume.png";
 import icon1 from "../Assets/icon (2).png";
+import config from "../config"; // Import the backend URL
 
 const WeatherInfo = () => {
   const [weather, setWeather] = useState(null);
@@ -18,7 +19,7 @@ const WeatherInfo = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5010/api/weather")
+    fetch(`${config.BACKEND_URL}/api/weather`)
       .then((response) => response.json())
       .then((data) => {
         setWeather({

@@ -88,7 +88,7 @@ const fetchAndStoreData = async () => {
       storedData.push(dataWithTimestamp);
 
       // Ensure the array does not exceed 100 entries
-      if (storedData.length > 100) {
+      if (storedData.length > 50) {
         storedData.shift(); // Remove the oldest entry
       }
 
