@@ -71,30 +71,51 @@ const LastData = () => {
   // Map sensor names to React Icons
   const iconColor = "#144884"; // Dark blue color for icons
   const iconMap = {
-    humidity: <FaTint size={40} color={iconColor} />,
-    rainDetected: <FaCloudRain size={40} color={iconColor} />,
-    rainIntensity: <FaCloudRain size={40} color={iconColor} />,
-    raindropValue: <FaCloudRain size={40} color={iconColor} />,
-    soilMoisture: <FaWater size={40} color={iconColor} />,
-    temp: <FaTemperatureHigh size={40} color={iconColor} />,
-    gasQuality: <FaGasPump size={40} color={iconColor} />,
-    default: <FaExclamationTriangle size={40} color={iconColor} />,
+    humidity: <FaTint size={40} color={iconColor} className="img-fluid" />,
+    rainDetected: (
+      <FaCloudRain size={40} color={iconColor} className="img-fluid" />
+    ),
+    rainIntensity: (
+      <FaCloudRain size={40} color={iconColor} className="img-fluid" />
+    ),
+    raindropValue: (
+      <FaCloudRain size={40} color={iconColor} className="img-fluid" />
+    ),
+    soilMoisture: <FaWater size={40} color={iconColor} className="img-fluid" />,
+    temp: (
+      <FaTemperatureHigh size={40} color={iconColor} className="img-fluid" />
+    ),
+    gasQuality: <FaGasPump size={40} color={iconColor} className="img-fluid" />,
+    default: (
+      <FaExclamationTriangle
+        size={40}
+        color={iconColor}
+        className="img-fluid"
+      />
+    ),
   };
 
   return (
-    <div className="mt-4 pb-5">
-      {/* 4X2 Grid */}
-      <div className="row row-cols-4 g-3">
+    <div className="container-fluid mt-4 pb-5">
+      <h3 className="mb-4 text-center text-primary">Latest Sensor Data</h3>
+
+      {/* Responsive Grid */}
+      <div className="row g-3">
         {Object.entries(sensorData).map(([key, value]) => {
           if (key === "mqValue") return null; // Skip raw mqValue, we use Gas Quality
 
           return (
-            <div key={key} className="col">
-              <div className="card text-center shadow-sm p-3 pt-5">
+            <div
+              key={key}
+              className="col-12 col-md-6 col-lg-3 d-flex justify-content-center"
+            >
+              <div className="card shadow-sm p-3 text-center w-100">
                 <div className="mx-auto">{iconMap[key] || iconMap.default}</div>
                 <div className="card-body">
-                  <h5 className="card-title">{nameMap[key] || key}</h5>
-                  <p className="card-text">
+                  <h6 className="card-title fw-semibold text-secondary">
+                    {nameMap[key] || key}
+                  </h6>
+                  <p className="card-text fs-5 fw-bold text-dark">
                     {typeof value === "boolean"
                       ? value
                         ? "Yes"
@@ -108,19 +129,21 @@ const LastData = () => {
         })}
 
         {/* Gas Quality Card */}
-        <div className="col">
-          <div className="card text-center shadow-sm p-3 pt-5">
+        <div className="col-12 col-md-6 col-lg-3 d-flex justify-content-center">
+          <div className="card shadow-sm p-3 text-center w-100">
             <div className="mx-auto">{iconMap["gasQuality"]}</div>
             <div className="card-body">
-              <h5 className="card-title">{nameMap["gasQuality"]}</h5>
-              <p className="card-text">{gasQuality} %</p>
+              <h6 className="card-title fw-semibold text-secondary">
+                {nameMap["gasQuality"]}
+              </h6>
+              <p className="card-text fs-5 fw-bold text-dark">{gasQuality} %</p>
             </div>
           </div>
         </div>
       </div>
-      <p className="text-end mt-3 pb-5">
-        {" "}
-        Device Updated on : {data.timestamp}
+
+      <p className="text-end mt-3 pb-5 text-muted small">
+        Device Updated on: <strong>{data.timestamp}</strong>
       </p>
     </div>
   );
