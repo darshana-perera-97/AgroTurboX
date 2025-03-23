@@ -19,8 +19,8 @@ const LandingSection = () => {
               weather forecasts, it provides farmers with actionable insights to
               enhance productivity and sustainability.
             </p>
-            <a href="#features" className="btn btn-primary btn-lg">
-              View Data
+            <a href="/about" className="btn btn-primary btn-lg">
+             About Us
             </a>
           </div>
 
