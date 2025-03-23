@@ -61,11 +61,13 @@ const LastData = () => {
   sensorData.rainIntensity = 0; // "0"
   sensorData.raindropValue = 0.001; // "0.001"
 
-  // Reduce Soil Moisture Level by 30, round to nearest whole number
+  // Set Soil Dryness to "Yes"
+  sensorData.soilDry = true;
+
+  // Modify Soil Moisture using X/5 formula and cap it at 20
   if (sensorData.soilMoisture !== undefined) {
-    sensorData.soilMoisture = Math.round(
-      Math.abs(sensorData.soilMoisture - 30)
-    );
+    const modifiedValue = Math.min(sensorData.soilMoisture / 5, 20);
+    sensorData.soilMoisture = Math.round(modifiedValue); // Nearest whole number
   }
 
   const gasQuality = ((sensorData.mqValue / 1024) * 100).toFixed(2);
