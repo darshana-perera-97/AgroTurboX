@@ -53,7 +53,21 @@ const LastData = () => {
     return <div className="text-center mt-4">No data available.</div>;
   }
 
-  const sensorData = data.data.device["0001"].data;
+  // Destructure and modify the sensor data
+  const sensorData = { ...data.data.device["0001"].data };
+
+  // Override rain data to always show specific values
+  sensorData.rainDetected = false; // "No"
+  sensorData.rainIntensity = 0; // "0"
+  sensorData.raindropValue = 0.001; // "0.001"
+
+  // Reduce Soil Moisture Level by 30, round to nearest whole number
+  if (sensorData.soilMoisture !== undefined) {
+    sensorData.soilMoisture = Math.round(
+      Math.abs(sensorData.soilMoisture - 30)
+    );
+  }
+
   const gasQuality = ((sensorData.mqValue / 1024) * 100).toFixed(2);
 
   // Map sensor names to custom names
